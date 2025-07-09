@@ -1,0 +1,31 @@
+{
+  "python.defaultInterpreterPath": "./metro_env/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.flake8Enabled": false,
+  "python.linting.pycodestyleEnabled": false,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length=88"],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
+  "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "test*.py"],
+  "files.associations": {
+    "*.html": "django-html",
+    "*.txt": "django-txt"
+  },
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  },
+  "django.snippets.exclude": ["cms", "wagtail"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/migrations/*.py": false,
+    "**/migrations/__pycache__": true
+  },
+  "python.analysis.extraPaths": ["./metro_app", "./metro_dashboard"],
+  "editor.rulers": [88],
+  "editor.formatOnSave": true,
+  "python.envFile": "${workspaceFolder}/.env"
+}

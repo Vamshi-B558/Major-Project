@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Metro Dashboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl glass-effect rounded-xl p-8 neon-glow">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="mx-auto w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-purple-400 mb-2">Cloud User Registration</h1>
+            <p class="text-slate-300">Join the Metro Flow Prediction System</p>
+        </div>
+
+        <!-- Registration Form -->
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+            
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="block text-slate-300 text-sm mb-2">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-slate-300 text-sm mb-2">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="{{ form.password1.id_for_label }}" class="block text-slate-300 text-sm mb-2">Password</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="block text-slate-300 text-sm mb-2">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <p class="text-red-400 text-sm mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="{{ form.mobile.id_for_label }}" class="block text-slate-300 text-sm mb-2">Mobile Number</label>
+                {{ form.mobile }}
+            </div>
+            
+            <div>
+                <label for="{{ form.date_of_birth.id_for_label }}" class="block text-slate-300 text-sm mb-2">Date of Birth</label>
+                {{ form.date_of_birth }}
+            </div>
+            
+            <div class="md:col-span-2">
+                <label for="{{ form.address.id_for_label }}" class="block text-slate-300 text-sm mb-2">Address</label>
+                {{ form.address }}
+            </div>
+            
+            <div>
+                <label for="{{ form.gender.id_for_label }}" class="block text-slate-300 text-sm mb-2">Gender</label>
+                {{ form.gender }}
+            </div>
+            
+            <div>
+                <label for="{{ form.pin_code.id_for_label }}" class="block text-slate-300 text-sm mb-2">PIN Code</label>
+                {{ form.pin_code }}
+            </div>
+            
+            <div class="md:col-span-2">
+                <label for="{{ form.profile_picture.id_for_label }}" class="block text-slate-300 text-sm mb-2">Profile Picture</label>
+                <div class="relative">
+                    {{ form.profile_picture }}
+                    <i class="fas fa-upload absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                </div>
+            </div>
+            
+            <div class="md:col-span-2 pt-4">
+                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
+                    Create Account
+                </button>
+            </div>
+        </form>
+
+        <!-- Login Link -->
+        <div class="text-center mt-6">
+            <p class="text-slate-400 text-sm">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-purple-400 hover:text-purple-300 underline">Login here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style form inputs */
+    input[type="text"], input[type="email"], input[type="password"], 
+    input[type="tel"], input[type="date"], textarea, select, input[type="file"] {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(51, 65, 85, 0.5);
+        border: 1px solid #475569;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+    }
+    
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus,
+    input[type="tel"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    input[type="file"] {
+        padding: 8px 12px;
+    }
+</style>
+{% endblock %}

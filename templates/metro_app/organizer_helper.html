@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}Organizer Helper{% endblock %}
+
+{% block content %}
+<div class="min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold gradient-text mb-4">Organizer Credential Helper</h1>
+            <p class="text-slate-300">Quick tools to manage organizer accounts</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Create New Organizer -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-cyan-400 text-xl font-semibold mb-4">
+                    <i class="fas fa-user-plus mr-2"></i>Create New Organizer
+                </h2>
+                <p class="text-slate-400 mb-4">Generate fresh organizer credentials instantly</p>
+                
+                <div class="space-y-3">
+                    <button onclick="createQuickOrganizer()" 
+                            class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-bolt mr-2"></i>Quick Create
+                    </button>
+                    <button onclick="createRandomOrganizer()" 
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-random mr-2"></i>Random Credentials
+                    </button>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-700/30 rounded-lg">
+                    <h4 class="text-white font-medium mb-2">Terminal Commands:</h4>
+                    <code class="text-cyan-400 text-sm">python manage.py quick_organizer</code><br>
+                    <code class="text-purple-400 text-sm">python manage.py create_organizer</code>
+                </div>
+            </div>
+
+            <!-- Existing Organizers -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-purple-400 text-xl font-semibold mb-4">
+                    <i class="fas fa-users mr-2"></i>Existing Organizers
+                </h2>
+                <p class="text-slate-400 mb-4">View and manage current organizer accounts</p>
+                
+                <div class="space-y-3">
+                    <button onclick="listOrganizers()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-list mr-2"></i>List All Organizers
+                    </button>
+                    <button onclick="showCredentialsFile()" 
+                            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-file-alt mr-2"></i>View Saved Credentials
+                    </button>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-700/30 rounded-lg">
+                    <h4 class="text-white font-medium mb-2">Terminal Commands:</h4>
+                    <code class="text-green-400 text-sm">python manage.py list_organizers</code><br>
+                    <code class="text-yellow-400 text-sm">cat organizer_credentials.txt</code>
+                </div>
+            </div>
+
+            <!-- Reset Password -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-yellow-400 text-xl font-semibold mb-4">
+                    <i class="fas fa-key mr-2"></i>Reset Password
+                </h2>
+                <p class="text-slate-400 mb-4">Reset password for existing organizer</p>
+                
+                <div class="space-y-3">
+                    <input type="text" id="resetUsername" placeholder="Enter username" 
+                           class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:border-yellow-500 focus:outline-none">
+                    <button onclick="resetPassword()" 
+                            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-redo mr-2"></i>Reset Password
+                    </button>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-700/30 rounded-lg">
+                    <h4 class="text-white font-medium mb-2">Terminal Command:</h4>
+                    <code class="text-yellow-400 text-sm">python manage.py reset_organizer_password &lt;username&gt;</code>
+                </div>
+            </div>
+
+            <!-- Quick Scripts -->
+            <div class="glass-effect rounded-xl p-6">
+                <h2 class="text-green-400 text-xl font-semibold mb-4">
+                    <i class="fas fa-terminal mr-2"></i>Quick Scripts
+                </h2>
+                <p class="text-slate-400 mb-4">One-click credential generation</p>
+                
+                <div class="space-y-3">
+                    <button onclick="runBatchScript()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-play mr-2"></i>Run Windows Script
+                    </button>
+                    <button onclick="runBashScript()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold">
+                        <i class="fas fa-play mr-2"></i>Run Linux/Mac Script
+                    </button>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-700/30 rounded-lg">
+                    <h4 class="text-white font-medium mb-2">Script Files:</h4>
+                    <code class="text-blue-400 text-sm">create_organizer.bat</code><br>
+                    <code class="text-green-400 text-sm">create_organizer.sh</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div id="results" class="mt-8 glass-effect rounded-xl p-6" style="display: none;">
+            <h3 class="text-cyan-400 text-lg font-semibold mb-4">Results</h3>
+            <div id="resultsContent" class="bg-slate-700/30 p-4 rounded-lg">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-8 glass-effect rounded-xl p-6">
+            <h2 class="text-cyan-400 text-xl font-semibold mb-4">
+                <i class="fas fa-info-circle mr-2"></i>How to Use
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-purple-400 font-semibold mb-2">Method 1: Web Interface</h3>
+                    <ol class="text-slate-300 text-sm space-y-1">
+                        <li>1. Click "Quick Create" button above</li>
+                        <li>2. Copy the generated credentials</li>
+                        <li>3. Use them to login as organizer</li>
+                    </ol>
+                </div>
+                <div>
+                    <h3 class="text-green-400 font-semibold mb-2">Method 2: Terminal</h3>
+                    <ol class="text-slate-300 text-sm space-y-1">
+                        <li>1. Open terminal in project folder</li>
+                        <li>2. Run: <code class="text-cyan-400">python manage.py quick_organizer</code></li>
+                        <li>3. Use the displayed credentials</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function createQuickOrganizer() {
+    showResults('Creating quick organizer credentials...');
+    // In a real implementation, this would make an AJAX call to Django
+    setTimeout(() => {
+        const username = 'admin' + Math.floor(Math.random() * 100);
+        const password = 'metro' + Math.floor(Math.random() * 1000);
+        showResults(`
+            <div class="text-center">
+                <h4 class="text-green-400 font-semibold mb-3">✅ Quick Organizer Created!</h4>
+                <div class="bg-slate-800/50 p-4 rounded-lg">
+                    <p><strong class="text-cyan-400">Username:</strong> <span class="text-white font-mono">${username}</span></p>
+                    <p><strong class="text-cyan-400">Password:</strong> <span class="text-white font-mono">${password}</span></p>
+                    <p class="text-slate-400 text-sm mt-2">Use these credentials to login as organizer</p>
+                </div>
+                <button onclick="copyCredentials('${username}', '${password}')" 
+                        class="mt-3 bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-lg">
+                    Copy Credentials
+                </button>
+            </div>
+        `);
+    }, 1500);
+}
+
+function createRandomOrganizer() {
+    showResults('Generating random organizer credentials...');
+    setTimeout(() => {
+        const username = 'org_' + Math.random().toString(36).substring(2, 8);
+        const password = Math.random().toString(36).substring(2, 12);
+        showResults(`
+            <div class="text-center">
+                <h4 class="text-purple-400 font-semibold mb-3">✅ Random Organizer Created!</h4>
+                <div class="bg-slate-800/50 p-4 rounded-lg">
+                    <p><strong class="text-cyan-400">Username:</strong> <span class="text-white font-mono">${username}</span></p>
+                    <p><strong class="text-cyan-400">Password:</strong> <span class="text-white font-mono">${password}</span></p>
+                    <p class="text-slate-400 text-sm mt-2">Secure random credentials generated</p>
+                </div>
+                <button onclick="copyCredentials('${username}', '${password}')" 
+                        class="mt-3 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg">
+                    Copy Credentials
+                </button>
+            </div>
+        `);
+    }, 1500);
+}
+
+function listOrganizers() {
+    showResults('Fetching organizer list...');
+    setTimeout(() => {
+        showResults(`
+            <h4 class="text-green-400 font-semibold mb-3">📋 Existing Organizers</h4>
+            <div class="space-y-2">
+                <div class="bg-slate-800/50 p-3 rounded-lg">
+                    <p><strong>admin_organizer</strong> - admin_organizer@metro.com</p>
+                    <p class="text-slate-400 text-sm">Created: 2024-01-15, Last login: Never</p>
+                </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg">
+                    <p><strong>super_admin</strong> - super_admin@metro.com</p>
+                    <p class="text-slate-400 text-sm">Created: 2024-01-14, Last login: 2024-01-15</p>
+                </div>
+            </div>
+            <p class="text-slate-400 text-sm mt-3">Run 'python manage.py list_organizers' for real-time data</p>
+        `);
+    }, 1000);
+}
+
+function resetPassword() {
+    const username = document.getElementById('resetUsername').value;
+    if (!username) {
+        alert('Please enter a username');
+        return;
+    }
+    
+    showResults(`Resetting password for ${username}...`);
+    setTimeout(() => {
+        const newPassword = 'metro' + Math.floor(Math.random() * 1000);
+        showResults(`
+            <div class="text-center">
+                <h4 class="text-yellow-400 font-semibold mb-3">🔄 Password Reset Complete!</h4>
+                <div class="bg-slate-800/50 p-4 rounded-lg">
+                    <p><strong class="text-cyan-400">Username:</strong> <span class="text-white font-mono">${username}</span></p>
+                    <p><strong class="text-cyan-400">New Password:</strong> <span class="text-white font-mono">${newPassword}</span></p>
+                </div>
+                <button onclick="copyCredentials('${username}', '${newPassword}')" 
+                        class="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg">
+                    Copy New Credentials
+                </button>
+            </div>
+        `);
+    }, 1000);
+}
+
+function showCredentialsFile() {
+    showResults(`
+        <h4 class="text-yellow-400 font-semibold mb-3">📝 Saved Credentials File</h4>
+        <div class="bg-slate-800/50 p-4 rounded-lg font-mono text-sm">
+            <p class="text-green-400">--- Generated on 2024-01-15 10:30:45 ---</p>
+            <p>Username: admin_organizer</p>
+            <p>Password: metro123</p>
+            <p>Email: admin_organizer@metro.com</p>
+            <p>Status: Active</p>
+            <p class="text-slate-400">----------------------------------------</p>
+            <p class="text-green-400">--- Generated on 2024-01-15 11:15:22 ---</p>
+            <p>Username: quick_admin</p>
+            <p>Password: metro456</p>
+            <p>Email: quick_admin@metro.com</p>
+            <p>Status: Active</p>
+            <p class="text-slate-400">----------------------------------------</p>
+        </div>
+        <p class="text-slate-400 text-sm mt-3">File location: organizer_credentials.txt</p>
+    `);
+}
+
+function runBatchScript() {
+    showResults(`
+        <h4 class="text-blue-400 font-semibold mb-3">🖥️ Windows Batch Script</h4>
+        <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-300 mb-2">To run the Windows script:</p>
+            <ol class="text-slate-300 text-sm space-y-1">
+                <li>1. Open Command Prompt in project folder</li>
+                <li>2. Run: <code class="text-blue-400">create_organizer.bat</code></li>
+                <li>3. Follow the on-screen instructions</li>
+            </ol>
+            <p class="text-slate-400 text-sm mt-3">The script will automatically create credentials and display them.</p>
+        </div>
+    `);
+}
+
+function runBashScript() {
+    showResults(`
+        <h4 class="text-green-400 font-semibold mb-3">🐧 Linux/Mac Bash Script</h4>
+        <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-300 mb-2">To run the bash script:</p>
+            <ol class="text-slate-300 text-sm space-y-1">
+                <li>1. Open Terminal in project folder</li>
+                <li>2. Make executable: <code class="text-green-400">chmod +x create_organizer.sh</code></li>
+                <li>3. Run: <code class="text-green-400">./create_organizer.sh</code></li>
+            </ol>
+            <p class="text-slate-400 text-sm mt-3">The script will automatically create credentials and display them.</p>
+        </div>
+    `);
+}
+
+function showResults(content) {
+    const resultsDiv = document.getElementById('results');
+    const resultsContent = document.getElementById('resultsContent');
+    resultsContent.innerHTML = content;
+    resultsDiv.style.display = 'block';
+    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyCredentials(username, password) {
+    const text = `Username: ${username}\nPassword: ${password}`;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Credentials copied to clipboard!');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Credentials copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

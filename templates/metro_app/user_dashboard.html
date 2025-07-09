@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 glass-effect border-r border-purple-500/20">
+        <div class="p-4">
+            <div class="flex items-center space-x-3 mb-8">
+                <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-white">Cloud User</h2>
+                    <p class="text-sm text-slate-400">Prediction Portal</p>
+                </div>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="#predict" onclick="showSection('predict')" class="sidebar-item active flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-white">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Predict Flow</span>
+                </a>
+                <a href="#profile" onclick="showSection('profile')" class="sidebar-item flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-user w-5"></i>
+                    <span>View Profile</span>
+                </a>
+                <a href="{% url 'results' %}" class="sidebar-item flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-download w-5"></i>
+                    <span>Download Results</span>
+                </a>
+                <a href="#analytics" onclick="showSection('analytics')" class="sidebar-item flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-chart-pie w-5"></i>
+                    <span>Flow Analytics</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="absolute bottom-4 left-4 right-4">
+            <a href="{% url 'logout' %}" class="w-full flex items-center justify-center py-2 px-4 border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+        <div class="p-6">
+            <!-- Predict Section -->
+            <div id="predict-section" class="section-content">
+                <div class="glass-effect rounded-xl p-6 border border-purple-500/30">
+                    <h3 class="text-purple-400 text-lg font-semibold mb-4">Passenger Flow Prediction</h3>
+                    <p class="text-slate-400 mb-6">Enter trip details to predict passenger flow using AFFN</p>
+                    
+                    <form method="post" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="{{ form.fid.id_for_label }}" class="block text-slate-300 text-sm mb-2">FID</label>
+                            {{ form.fid }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.trip_id.id_for_label }}" class="block text-slate-300 text-sm mb-2">Trip ID</label>
+                            {{ form.trip_id }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.metro_name.id_for_label }}" class="block text-slate-300 text-sm mb-2">Metro Name</label>
+                            {{ form.metro_name }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.city.id_for_label }}" class="block text-slate-300 text-sm mb-2">City</label>
+                            {{ form.city }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.source_station.id_for_label }}" class="block text-slate-300 text-sm mb-2">Source Station</label>
+                            {{ form.source_station }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.destination_station.id_for_label }}" class="block text-slate-300 text-sm mb-2">Destination Station</label>
+                            {{ form.destination_station }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.date.id_for_label }}" class="block text-slate-300 text-sm mb-2">Date</label>
+                            {{ form.date }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.time.id_for_label }}" class="block text-slate-300 text-sm mb-2">Time</label>
+                            {{ form.time }}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.number_of_boardings.id_for_label }}" class="block text-slate-300 text-sm mb-2">Number of Boardings</label>
+                            {{ form.number_of_boardings }}
+                        </div>
+                        
+                        <div class="md:col-span-2 lg:col-span-3 pt-4">
+                            <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Predict Passenger Flow
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Predictions -->
+                {% if user_predictions %}
+                <div class="mt-6 glass-effect rounded-xl p-6">
+                    <h3 class="text-cyan-400 text-lg font-semibold mb-4">Recent Predictions</h3>
+                    <div class="space-y-3">
+                        {% for prediction in user_predictions %}
+                        <div class="flex justify-between items-center p-4 bg-slate-700/30 rounded-lg">
+                            <div>
+                                <p class="text-white font-medium">{{ prediction.request.fid }}</p>
+                                <p class="text-slate-400 text-sm">{{ prediction.request.source_station }} → {{ prediction.request.destination_station }}</p>
+                                <p class="text-slate-500 text-xs">{{ prediction.processed_at|date:"M d, Y H:i" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-purple-400 font-semibold">{{ prediction.predicted_flow }}</p>
+                                <span class="px-2 py-1 text-xs rounded-full {% if prediction.flow_type == 'High' %}bg-red-600/20 text-red-400{% elif prediction.flow_type == 'Medium' %}bg-yellow-600/20 text-yellow-400{% else %}bg-green-600/20 text-green-400{% endif %}">
+                                    {{ prediction.flow_type }}
+                                </span>
+                                <p class="text-green-400 text-xs">{{ prediction.accuracy|floatformat:1 }}%</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section-content" style="display: none;">
+                <div class="glass-effect rounded-xl p-6 border border-purple-500/30">
+                    <h3 class="text-purple-400 text-lg font-semibold mb-6">User Profile</h3>
+                    <div class="flex items-center space-x-6 mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile" class="w-full h-full rounded-full object-cover">
+                            {% else %}
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-white">{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="text-slate-400">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-slate-300 text-sm mb-1">Mobile Number</label>
+                            <p class="text-white">{{ user.mobile|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 text-sm mb-1">Date of Birth</label>
+                            <p class="text-white">{{ user.date_of_birth|default:"Not provided" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 text-sm mb-1">Gender</label>
+                            <p class="text-white">{{ user.gender|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 text-sm mb-1">PIN Code</label>
+                            <p class="text-white">{{ user.pin_code|default:"Not provided" }}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-slate-300 text-sm mb-1">Address</label>
+                            <p class="text-white">{{ user.address|default:"Not provided" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section-content" style="display: none;">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-effect rounded-xl p-6">
+                        <h3 class="text-purple-400 text-lg font-semibold mb-4">Flow Distribution</h3>
+                        <canvas id="flowChart" width="400" height="300"></canvas>
+                    </div>
+                    
+                    <div class="glass-effect rounded-xl p-6">
+                        <h3 class="text-cyan-400 text-lg font-semibold mb-4">Station-wise Flow</h3>
+                        <canvas id="stationChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="fixed top-4 right-4 p-4 rounded-lg z-50 {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600{% endif %} text-white">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<style>
+    /* Style form inputs */
+    input[type="text"], input[type="number"], input[type="date"], 
+    input[type="time"], select {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(51, 65, 85, 0.5);
+        border: 1px solid #475569;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+</style>
+
+<script>
+    function showSection(sectionName) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.section-content');
+        sections.forEach(section => section.style.display = 'none');
+        
+        // Show selected section
+        document.getElementById(sectionName + '-section').style.display = 'block';
+        
+        // Update sidebar active state
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => item.classList.remove('active'));
+        event.target.closest('.sidebar-item').classList.add('active');
+        
+        // Load analytics data if analytics section is shown
+        if (sectionName === 'analytics') {
+            loadAnalyticsData();
+        }
+    }
+
+    function loadAnalyticsData() {
+        fetch('{% url "analytics_data" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Flow Distribution Chart
+                const flowCtx = document.getElementById('flowChart').getContext('2d');
+                new Chart(flowCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.flow_distribution.map(item => item.flow_type),
+                        datasets: [{
+                            data: data.flow_distribution.map(item => item.count),
+                            backgroundColor: ['#EF4444', '#F59E0B', '#10B981']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Station Chart
+                const stationCtx = document.getElementById('stationChart').getContext('2d');
+                new Chart(stationCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.station_data.map(item => item.request__source_station__name),
+                        datasets: [{
+                            label: 'Average Flow',
+                            data: data.station_data.map(item => item.avg_flow),
+                            backgroundColor: 'rgba(139, 92, 246, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+    }
+</script>
+{% endblock %}

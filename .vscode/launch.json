@@ -1,0 +1,75 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django: Debug Server",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "django": true,
+      "autoReload": {
+        "enable": true
+      },
+      "env": {
+        "DJANGO_DEBUG": "True"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "subProcess": true
+    },
+    {
+      "name": "Django: Debug Server (No Reload)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "--noreload", "127.0.0.1:8000"],
+      "django": true,
+      "env": {
+        "DJANGO_DEBUG": "True"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Run Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["test"],
+      "django": true,
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Run Specific Test",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["test", "metro_app.tests"],
+      "django": true,
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Shell",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["shell"],
+      "django": true,
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Migrate",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["migrate"],
+      "django": true,
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}
